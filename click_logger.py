@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template_string
 from datetime import datetime
 import pytz
 import os
+from user_agents import parse
 
 app = Flask(__name__)
 
@@ -47,25 +48,39 @@ def info():
     utc_time = datetime.now(pytz.utc)
     timestamp = utc_time.strftime("%Y-%m-%d %H:%M:%S %Z")
 
-    # Bonus point information:
-    # 1. User-Agent (type of browser or tool used)
+    # User-Agent (type of browser or tool used)
     user_agent = request.headers.get('User-Agent', 'Unknown')
 
-    # 3. Language settings of the user's browser
+    # Parse the User-Agent string
+    parsed_user_agent = parse(user_agent)
+
+    # Extract OS, device, and browser
+    os = parsed_user_agent.os.family
+    device = parsed_user_agent.device.family
+    browser = parsed_user_agent.browser.family
+
+    # Language settings of the user's browser
     language = request.headers.get('Accept-Language', 'Unknown')
 
-    # 4. Protocol (HTTP version)
+    # Timezone (if available via header, else use a fallback)
+    timezone = request.headers.get('TimeZone', 'Unknown')
+
+    # Protocol (HTTP version)
     protocol = request.environ.get('SERVER_PROTOCOL', 'Unknown')
 
-    # Additional information
+    # Port number
     port = request.environ.get('REMOTE_PORT', 'Unknown')
 
-    # Log data
+    # Log the data
     log_entry = {
         "IP Address": ip_address,
         "Timestamp (UTC)": timestamp,
         "User-Agent": user_agent,
+        "OS": os,
+        "Device": device,
+        "Browser": browser,
         "Language": language,
+        "Timezone": timezone,
         "Protocol": protocol,
         "Port": port,
     }
