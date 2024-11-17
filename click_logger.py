@@ -13,11 +13,19 @@ HOME_TEMPLATE = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Click Tracker</title>
+    <script>
+        // Capture local time zone and send it to the server with the click
+        function sendTimezone() {
+            var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            // Redirecting to track-click with the time zone information as a query parameter
+            window.location.href = '/track-click?timezone=' + encodeURIComponent(timezone);
+        }
+    </script>
 </head>
 <body>
     <h1>Welcome!</h1>
     <p>Click the link below to log your information:</p>
-    <a href="/track-click">Click Me!</a>
+    <a href="javascript:void(0);" onclick="sendTimezone()">Click Me!</a>
 </body>
 </html>
 """
@@ -58,7 +66,9 @@ def track_click():
 
     # Additional information
     port = request.environ.get('REMOTE_PORT', 'Unknown')
- 
+
+    # Capture the time zone from the query parameter passed by JavaScript
+    timezone = request.args.get('timezone', 'Unknown')
 
     # Log data
     log_entry = {
@@ -68,6 +78,7 @@ def track_click():
         "Language": language,
         "Protocol": protocol,
         "Port": port,
+        "Local Time Zone": timezone
     }
 
     # Format the log entry for file writing
