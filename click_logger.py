@@ -115,8 +115,8 @@ def info():
 
     # Return log information as a response
     return jsonify({
-        "message": "Thank you for clicking!",
-        "logged_data": log_entry
+        "Oh no you have been phished!!!",
+        " Thank you for clicking the link :)",
     })
 
 if __name__ == '__main__':
