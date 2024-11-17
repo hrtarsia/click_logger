@@ -33,12 +33,25 @@ def get_geolocation_from_ip(ip_address):
 
         # Extract geolocation and timezone
         timezone = data.get('timezone', 'Unknown')
-        location = data.get('loc', 'Unknown')  # Latitude and longitude
-        latitude, longitude = location.split(',') if location != 'Unknown' else ('Unknown', 'Unknown')
-        return timezone, latitude, longitude
+        return timezone
     except Exception as e:
         print(f"Error getting geolocation: {e}")
-        return 'Unknown', 'Unknown', 'Unknown'
+        return 'Unknown'
+        
+def get_device_type(user_agent):
+    parsed_user_agent = parse(user_agent)
+
+    # Check if it's a mobile device
+    if parsed_user_agent.is_mobile:
+        return "Mobile"
+    # Check if it's a tablet
+    elif parsed_user_agent.is_tablet:
+        return "Tablet"
+    # Check if it's a desktop/laptop
+    elif parsed_user_agent.is_pc:
+        return "PC"
+    else:
+        return "Other"
 
 @app.route('/')
 def home():
@@ -68,7 +81,7 @@ def info():
 
     # Extract OS, device, and browser
     os = parsed_user_agent.os.family
-    device = parsed_user_agent.device.family
+    device = get_device_type(user_agent)
     browser = parsed_user_agent.browser.family
 
     # Language settings of the user's browser
@@ -90,8 +103,6 @@ def info():
         "Browser": browser,
         "Language": language,
         "Timezone": timezone,
-        "Latitude": latitude,
-        "Longitude": longitude,
         "Protocol": protocol,
         "Port": port,
     }
