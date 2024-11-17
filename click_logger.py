@@ -58,6 +58,7 @@ def home():
     return render_template_string(HOME_TEMPLATE)
 
 @app.route('/LinkedIn', methods=['GET'])
+def LinkedIn():
     ip_address = request.remote_addr
 
     # Get the timezone and geolocation (latitude and longitude) based on the user's IP address
