@@ -23,14 +23,6 @@ HOME_TEMPLATE = """
 </html>
 """
 
-# Path for the log file
-LOG_FILE_PATH = "/click_logs.txt"
-
-# Function to append data to the log file
-def append_to_log_file(data):
-    with open(LOG_FILE_PATH, 'a') as file:
-        file.write(f"{data}\n")
-
 @app.route('/')
 def home():
     return render_template_string(HOME_TEMPLATE)
@@ -87,9 +79,6 @@ def info():
 
     # Format the log entry for file writing
     formatted_entry = "\n".join([f"{key}: {value}" for key, value in log_entry.items()])
-
-    # Append the entry to the log file
-    append_to_log_file(formatted_entry)
 
     # Print log to console as well
     print(f"Log Entry:\n{formatted_entry}")
