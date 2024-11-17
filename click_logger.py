@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template_string
 from datetime import datetime
 import pytz
 import os
+import requests
 from user_agents import parse
 
 app = Flask(__name__)
@@ -23,6 +24,22 @@ HOME_TEMPLATE = """
 </html>
 """
 
+# Function to get geolocation and timezone from IP using ipinfo.io API
+def get_geolocation_from_ip(ip_address):
+    try:
+        # Use ipinfo.io API to get geolocation data, including timezone and latitude/longitude
+        response = requests.get(f'https://ipinfo.io/{ip_address}/json')
+        data = response.json()
+
+        # Extract geolocation and timezone
+        timezone = data.get('timezone', 'Unknown')
+        location = data.get('loc', 'Unknown')  # Latitude and longitude
+        latitude, longitude = location.split(',') if location != 'Unknown' else ('Unknown', 'Unknown')
+        return timezone, latitude, longitude
+    except Exception as e:
+        print(f"Error getting geolocation: {e}")
+        return 'Unknown', 'Unknown', 'Unknown'
+
 @app.route('/')
 def home():
     return render_template_string(HOME_TEMPLATE)
@@ -35,6 +52,9 @@ def info():
     else:
         # Fall back to the remote address if 'X-Forwarded-For' does not exist
         ip_address = request.remote_addr
+
+    # Get the timezone and geolocation (latitude and longitude) based on the user's IP address
+    timezone, latitude, longitude = get_geolocation_from_ip(ip_address)
 
     # Log timestamp in UTC
     utc_time = datetime.now(pytz.utc)
@@ -54,9 +74,6 @@ def info():
     # Language settings of the user's browser
     language = request.headers.get('Accept-Language', 'Unknown')
 
-    # Timezone (if available via header, else use a fallback)
-    timezone = request.headers.get('TimeZone', 'Unknown')
-
     # Protocol (HTTP version)
     protocol = request.environ.get('SERVER_PROTOCOL', 'Unknown')
 
@@ -73,6 +90,8 @@ def info():
         "Browser": browser,
         "Language": language,
         "Timezone": timezone,
+        "Latitude": latitude,
+        "Longitude": longitude,
         "Protocol": protocol,
         "Port": port,
     }
