@@ -17,7 +17,7 @@ HOME_TEMPLATE = """
 <body>
     <h1>Welcome!</h1>
     <p>Click the link below to log your information:</p>
-    <a href="/track-click">Click Me!</a>
+    <a href="/info">Click Me!</a>
 </body>
 </html>
 """
@@ -35,7 +35,7 @@ def home():
     return render_template_string(HOME_TEMPLATE)
 
 @app.route('/info', methods=['GET'])
-def track_click():
+def info():
     if 'X-Forwarded-For' in request.headers:
         # Get the first IP address in the 'X-Forwarded-For' list
         ip_address = request.headers.get('X-Forwarded-For').split(',')[0]
