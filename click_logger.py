@@ -67,7 +67,7 @@ def info():
         ip_address = request.remote_addr
 
     # Get the timezone and geolocation (latitude and longitude) based on the user's IP address
-    timezone, latitude, longitude = get_geolocation_from_ip(ip_address)
+    timezone = get_geolocation_from_ip(ip_address)
 
     # Log timestamp in UTC
     utc_time = datetime.now(pytz.utc)
