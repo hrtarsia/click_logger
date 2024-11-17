@@ -19,7 +19,7 @@ HOME_TEMPLATE = """
 <body>
     <h1>Welcome!</h1>
     <p>Click the link below to log your information:</p>
-    <a href="/info">Click Me!</a>
+    <a href="/LinkedIn">Click Me!</a>
 </body>
 </html>
 """
@@ -57,14 +57,8 @@ def get_device_type(user_agent):
 def home():
     return render_template_string(HOME_TEMPLATE)
 
-@app.route('/info', methods=['GET'])
-def info():
-    if 'X-Forwarded-For' in request.headers:
-        # Get the first IP address in the 'X-Forwarded-For' list
-        ip_address = request.headers.get('X-Forwarded-For').split(',')[0]
-    else:
-        # Fall back to the remote address if 'X-Forwarded-For' does not exist
-        ip_address = request.remote_addr
+@app.route('/LinkedIn', methods=['GET'])
+    ip_address = request.remote_addr
 
     # Get the timezone and geolocation (latitude and longitude) based on the user's IP address
     timezone = get_geolocation_from_ip(ip_address)
