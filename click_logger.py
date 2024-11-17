@@ -13,28 +13,17 @@ HOME_TEMPLATE = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Click Tracker</title>
-    <script>
-        // Capture local time zone and send it to the server with the click
-        function sendTimezone() {
-            var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            // Redirecting to track-click with the time zone information as a query parameter
-            window.location.href = '/track-click?timezone=' + encodeURIComponent(timezone);
-        }
-    </script>
 </head>
 <body>
     <h1>Welcome!</h1>
     <p>Click the link below to log your information:</p>
-    <a href="javascript:void(0);" onclick="sendTimezone()">Click Me!</a>
+    <a href="/track-click">Click Me!</a>
 </body>
 </html>
 """
 
 # Path for the log file
 LOG_FILE_PATH = "/click_logs.txt"
-
-# Ensure the log directory exists
-os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
 
 # Function to append data to the log file
 def append_to_log_file(data):
@@ -45,10 +34,14 @@ def append_to_log_file(data):
 def home():
     return render_template_string(HOME_TEMPLATE)
 
-@app.route('/track-click', methods=['GET'])
+@app.route('/info', methods=['GET'])
 def track_click():
-    # Log IP address
-    ip_address = request.remote_addr
+    if 'X-Forwarded-For' in request.headers:
+        # Get the first IP address in the 'X-Forwarded-For' list
+        ip_address = request.headers.get('X-Forwarded-For').split(',')[0]
+    else:
+        # Fall back to the remote address if 'X-Forwarded-For' does not exist
+        ip_address = request.remote_addr
 
     # Log timestamp in UTC
     utc_time = datetime.now(pytz.utc)
@@ -67,9 +60,6 @@ def track_click():
     # Additional information
     port = request.environ.get('REMOTE_PORT', 'Unknown')
 
-    # Capture the time zone from the query parameter passed by JavaScript
-    timezone = request.args.get('timezone', 'Unknown')
-
     # Log data
     log_entry = {
         "IP Address": ip_address,
@@ -78,7 +68,6 @@ def track_click():
         "Language": language,
         "Protocol": protocol,
         "Port": port,
-        "Local Time Zone": timezone
     }
 
     # Format the log entry for file writing
