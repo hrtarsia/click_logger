@@ -23,7 +23,7 @@ HOME_TEMPLATE = """
 """
 
 # Path for the log file
-LOG_FILE_PATH = "pentest_log/click_logs.txt"
+LOG_FILE_PATH = "/click_logs.txt"
 
 # Ensure the log directory exists
 os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
