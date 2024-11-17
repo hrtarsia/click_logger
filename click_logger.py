@@ -50,9 +50,6 @@ def track_click():
     # 1. User-Agent (type of browser or tool used)
     user_agent = request.headers.get('User-Agent', 'Unknown')
 
-    # 2. Referrer (page that led to this link click)
-    referrer = request.referrer or "No referrer"
-
     # 3. Language settings of the user's browser
     language = request.headers.get('Accept-Language', 'Unknown')
 
@@ -61,22 +58,16 @@ def track_click():
 
     # Additional information
     port = request.environ.get('REMOTE_PORT', 'Unknown')
-    cookies = request.cookies
-    request_path = request.path
-    query_params = request.args
+ 
 
     # Log data
     log_entry = {
         "IP Address": ip_address,
         "Timestamp (UTC)": timestamp,
         "User-Agent": user_agent,
-        "Referrer": referrer,
         "Language": language,
         "Protocol": protocol,
         "Port": port,
-        "Request Path": request_path,
-        "Query Parameters": query_params.to_dict(),
-        "Cookies": {key: cookies[key] for key in cookies}
     }
 
     # Format the log entry for file writing
